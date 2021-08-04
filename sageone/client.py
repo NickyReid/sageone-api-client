@@ -8,12 +8,13 @@ logger = logging.getLogger(__name__)
 
 class APIClient(object):
 
-    def __init__(self, api_url, api_key, username, password, version='1.1.1'):
+    def __init__(self, api_url, api_key, username, password, company_id, version='1.1.1'):
         """
         Stores the API key and sets up the root API URL with basic auth
         for future Hammock calls
         """
         self.api_key = api_key
+        self.company_id = company_id
         self.api = hammock.Hammock(
             '%s/api/%s' % (api_url, version),
             auth=(username, password))
@@ -38,8 +39,8 @@ class APIClient(object):
         # initialise the request headers
         headers = {'Accept': 'application/json'}
 
-        # initialise the request parameters - always add the API key
-        params = {'APIKey': self.api_key}
+        # initialise the request parameters - always add the API key and company id
+        params = {'APIKey': self.api_key, 'CompanyId': self.company_id}
 
         # initialise the POST data
         data = {}
@@ -48,15 +49,11 @@ class APIClient(object):
         # kwargs depending on the request verb
         if verb.upper() == 'POST':
             data.update(kwargs)
-            # set the POST body content type and encoding in the request
-            # headers
-            headers['Content-Type': 'application/json; charset=utf-8']
         else:
             params.update(kwargs)
 
         # send the request
         response = getattr(request, verb.upper())(
-            params=params, data=data, headers=headers)
+            params=params, json=data, headers=headers)
 
-        # return the response
         return response.json()
