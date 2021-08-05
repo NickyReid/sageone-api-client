@@ -63,4 +63,7 @@ class APIClient(object):
             print(f"params: {params}")
             print(f"data: {data}")
 
+        if response.headers.get("Content-Type") == "application/octet-stream":
+            return response.content
+
         return response.json()
