@@ -56,4 +56,11 @@ class APIClient(object):
         response = getattr(request, verb.upper())(
             params=params, json=data, headers=headers)
 
+        if response.status_code not in [200, 201]:
+            print(f"url: {response.url}")
+            print(f"response: {response.status_code}")
+            print(f"content: {response.content}")
+            print(f"params: {params}")
+            print(f"data: {data}")
+
         return response.json()
